@@ -2,6 +2,7 @@
 
 export(get_pathway_namelist)
 export(hmplot)
+export(res_subgroup)
 export(subset_count_maxtrix)
 import(gplots)
 import(pheatmap)

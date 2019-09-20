@@ -43,7 +43,7 @@ get_pathway_namelist <- function(fileName){
   for(i in 1:length(pathway_names.vector)){
     pathway_genes.list[[i]] <- dplyr::select(enrichment.tibble, `Gene Symbol`,
                                         pathway_names.vector[i]) %>%
-      dplyr::filter(.[[2]] != 'NA') %>% #only keep those genes belong to this pathway
+      dplyr::filter(.[[2]] != 'NA') %>%
       dplyr::select(`Gene Symbol`) %>%
       dplyr::pull(var = 1)
   }
@@ -62,6 +62,7 @@ get_pathway_namelist <- function(fileName){
 
   return(pathway_genes.list)
 }
+
 
 #' get tibbles of different subgrouped genes by pathway
 #'
