@@ -10,3 +10,9 @@ autoHeatmap::hmplot(count_matrix , 'data/example.csv')
 
 list <- autoHeatmap::get_pathway_namelist(fileName = 'data/example.csv')
 reduce(list, union)
+
+
+autoHeatmap::perth_table_trans(data = 'data/trans_demo.xlsx')
+p <- autoHeatmap::perth_table_trans(data = 'data/trans_demo.xlsx')
+
+

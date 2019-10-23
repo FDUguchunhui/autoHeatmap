@@ -1,5 +1,5 @@
 .libPaths("D:/R-3.5.1/library")
-#' @import tidyverse xlsx pheatmap gplots
+#' @import pheatmap gplots
 # options
 options(tibble.print_max = 10, tibble.width = Inf)
 
@@ -16,9 +16,9 @@ get_pathway_namelist <- function(fileName){
   string.list <- scan(enrichment.csv, what = '', sep = '\n')
   start <- which(startsWith(string.list, 'Gene/Gene Set Overlap'))
   enrichment.tibble <- readr::read_csv(file = fileName, skip = start + 1,
-                                col_types = cols(
-                                                `Entrez Gene Id` = col_character())
-                                                )
+                                       col_types = cols(
+                                         `Entrez Gene Id` = col_character())
+  )
   close(enrichment.csv)
   # the enrichment.table have data structure like this
   # Entrez.Gene.Id Gene.Symbol Gene.Description                               HALLMARK_E2F_TARGETS
@@ -42,7 +42,7 @@ get_pathway_namelist <- function(fileName){
   pathway_genes.list <- list()
   for(i in 1:length(pathway_names.vector)){
     pathway_genes.list[[i]] <- dplyr::select(enrichment.tibble, `Gene Symbol`,
-                                        pathway_names.vector[i]) %>%
+                                             pathway_names.vector[i]) %>%
       dplyr::filter(.[[2]] != 'NA') %>%
       dplyr::select(`Gene Symbol`) %>%
       dplyr::pull(var = 1)
@@ -56,7 +56,7 @@ get_pathway_namelist <- function(fileName){
   #of those pathway
   genes.union <- purrr::reduce(pathway_genes.list, union)
   gene.left <- dplyr::filter(enrichment.tibble, !(`Gene Symbol` %in% genes.union)) %>%
-                      dplyr::select(`Gene Symbol`)
+    dplyr::select(`Gene Symbol`)
   # add it into the list
   pathway_genes.list <- c(pathway_genes.list, left = gene.left)
 
@@ -67,11 +67,11 @@ get_pathway_namelist <- function(fileName){
 #' get tibbles of different subgrouped genes by pathway
 #'
 #' more information
-#' @param count_matrix  the RNA-seq expression level count matrix, typically
-#' a normalized count matrix is used
+#' @param count_matrix  the RNA-seq expression level count matrix, typically a
+#'   normalized count matrix is used
 #' @param enrichment_xlsx  the modified enrichment export xlsx file
 #' @param fun the fun used to get lists of genes names from enrichment analysis
-#'  export
+#'   export
 #' @return a list of tibbles of count matrix for different pathways
 #' @export
 #'
@@ -79,7 +79,7 @@ get_pathway_namelist <- function(fileName){
 subset_count_maxtrix <- function(count_matrix, enrichment){
   # convert count matrix as tibble
   count_matrix.tibble <- as_tibble((data.frame(gene_name = row.names(count_matrix),
-                                                                 count_matrix)))
+                                               count_matrix)))
   pathway_genes_names.list <- get_pathway_namelist(enrichment)
   # get a list of lists of gene names only
   # use the lists of gene to subset the count matrix
@@ -123,15 +123,14 @@ hmplot <- function(count_matrix, enrichment, file = 'heatmap.pdf', left_all = T)
   pdf(file)
   # plot the heatmap for subsets
   for(i in 1:length(genes_tibbles.list)){
-     #heatmap(genes_count_matrices.list[[i]], main = pathway_names[i], Rowv = F)
-     #heatmap.2(genes_count_matrices.list[[i]], main = pathway_names[i], Rowv = F)
-     pheatmap(genes_count_matrices.list[[i]], main = pathway_names[i], cluster_cols = F)
+    #heatmap(genes_count_matrices.list[[i]], main = pathway_names[i], Rowv = F)
+    #heatmap.2(genes_count_matrices.list[[i]], main = pathway_names[i], Rowv = F)
+    pheatmap(genes_count_matrices.list[[i]], main = pathway_names[i], cluster_cols = F)
   }
 
   # plot heatmap of all genes that are not in any of those pathways
   if(left_all == T){
 
-    # pheatmap(genes_count_matrices)
   }
 
   dev.off()
@@ -139,6 +138,3 @@ hmplot <- function(count_matrix, enrichment, file = 'heatmap.pdf', left_all = T)
 
 
 }
-
-
-

@@ -7,8 +7,8 @@
 subset_count_maxtrix(count_matrix, enrichment)
 }
 \arguments{
-\item{count_matrix}{the RNA-seq expression level count matrix, typically
-a normalized count matrix is used}
+\item{count_matrix}{the RNA-seq expression level count matrix, typically a
+normalized count matrix is used}
 
 \item{enrichment_xlsx}{the modified enrichment export xlsx file}
 
