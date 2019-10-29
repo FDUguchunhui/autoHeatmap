@@ -1,4 +1,3 @@
-.libPaths("D:/R-3.5.1/library")
 #' @import pheatmap gplots
 # options
 options(tibble.print_max = 10, tibble.width = Inf)

@@ -15,6 +15,6 @@ Imports:
   pheatmap,
   gplots,
   dplyr,
+  readr,
   tibble,
-  tidyr,
-  xlsx
+  tidyr

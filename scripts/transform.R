@@ -1,4 +1,4 @@
-#'@import magrittr dplyr tibble tidyr xlsx
+#'@import magrittr dplyr readr tibble tidyr
 
 data_demo <- 'data/trans_demo.xlsx'
 
@@ -9,9 +9,7 @@ data_demo <- 'data/trans_demo.xlsx'
 perth_table_trans <- function(data){
 
   # read-in data, with only Subject as char, others as numeric
-  dat <- read.xlsx(data, sheetIndex = 1,
-                         colClasses = (c('character',
-                                          rep('numeric', 20)))) %>%
+  dat <- read_csv(data, sheetIndex = 1) %>%
     as_tibble() %>%
     select(-contains('NA')) %>% # delete NA column which is used as delim
     drop_na() %>% # drop row without information
