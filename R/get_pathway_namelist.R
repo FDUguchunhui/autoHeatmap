@@ -1,4 +1,4 @@
-#' @import pheatmap gplots
+#' @import pheatmap gplots tidyr readr dplyr
 # options
 options(tibble.print_max = 10, tibble.width = Inf)
 
