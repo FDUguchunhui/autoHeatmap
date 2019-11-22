@@ -1,5 +1,5 @@
 .libPaths("D:/R-3.5.1/library")
-#' @import pheatmap gplots tibble tidyr readr dplyr
+#' @import pheatmap gplots tibble tidyr readr dplyr viridis
 # options
 options(tibble.print_max = 10, tibble.width = Inf)
 
@@ -78,19 +78,20 @@ get_pathway_namelist <- function(fileName){
 #'
 subset_count_maxtrix <- function(count_matrix, enrichment){
   # convert count matrix as tibble
-  count_matrix_tibble <- as_tibble((data.frame(gene_name = row.names(count_matrix),
+  count_matrix_tibble <- as_tibble((data.frame(gene_name = rownames(count_matrix),
                                                count_matrix)))
-  pathway_genes_names.list <- get_pathway_namelist(enrichment)
+  pathway_genes_names_list <- get_pathway_namelist(enrichment)
+  pathway_names <- names(pathway_genes_names_list)
   # get a list of lists of gene names only
   # use the lists of gene to subset the count matrix
   # initialize the subgroup
-  count_matrix_subgrouped.list <- list()
+  count_matrix_subgrouped_list <- list()
   # get a list of those subgroup genes sets
-  for(i in 1:length(pathway_genes_names.list)){
-    count_matrix_subgrouped.list[[i]] <-
-      dplyr::filter(count_matrix.tibble, gene_name %in% pathway_genes_names.list[[i]])
+  for(i in 1:length(pathway_genes_names_list)){
+    count_matrix_subgrouped_list[[i]] <-
+      filter(count_matrix_tibble, gene_name %in% pathway_genes_names_list[[i]])
   }
-  result_list <- list('subgroups' = count_matrix_subgrouped.list, 'names' = pathway_genes_names.list)
+  result_list <- list('subgroups' = count_matrix_subgrouped_list, 'names' = pathway_names)
   return(result_list)
 }
 
@@ -102,39 +103,48 @@ subset_count_maxtrix <- function(count_matrix, enrichment){
 #' @param count_matrix the RNA-seq expression level count matrix
 #' @param enrichment_xlsx the post-processed Excel file from enrichment analysis
 #' @param file the destination and name you want to save your heatmap, by default is the
+#' @param ... other parameters used in pheatmap
 #' your current work directory, the default name is heatmap.pdf
 #' @return output a pdf file of heatmaps of all the pathways in the enrichment_xlsx
 #' @export
 #'
 #'
-hmplot <- function(count_matrix, enrichment, file = 'heatmap.pdf', left_all = T){
+hmplot <- function(count_matrix, enrichment, file = 'heatmap.pdf',
+                   cluster_rows = TRUE,
+                   cluster_cols = TRUE,
+                   show_colnames = TRUE,
+                   show_rownames = TRUE,
+                   annotation_col = NA,
+                   border_color = 'black',
+                   color = inferno(10)){
   # get the a list of tibbles of subsets of genes
-  genes_tibbles.list <- subset_count_maxtrix(count_matrix, enrichment)$subgroups
+  genes_tibbles_list <- subset_count_maxtrix(count_matrix, enrichment)$subgroups
   # get the names of objects in list, will be used as title of heatmaps
-  pathway_names <- names(subset_count_maxtrix(count_matrix, enrichment)$names)
+  pathway_names <- subset_count_maxtrix(count_matrix, enrichment)$names
 
 
   # transform tibbles into count_matrices with first column as rownames
-  genes_pre_matrices.list <- lapply(genes_tibbles.list, dplyr::select, -1)
-  genes_count_matrices.list <- lapply(genes_pre_matrices.list, data.matrix)
-  for(i in 1:length(genes_tibbles.list)){
-    rownames(genes_count_matrices.list[[i]]) <- pull(dplyr::select(genes_tibbles.list[[i]], 1))
+  genes_pre_matrices_list <- lapply(genes_tibbles_list, select, -1)
+  genes_count_matrices_list <- lapply(genes_pre_matrices_list, data.matrix)
+  for(i in 1:length(genes_tibbles_list)){
+    rownames(genes_count_matrices_list[[i]]) <- pull(select(genes_tibbles_list[[i]], 1))
   }
   pdf(file)
   # plot the heatmap for subsets
-  for(i in 1:length(genes_tibbles.list)){
+  for(i in 1:(length(genes_tibbles_list))){
     #heatmap(genes_count_matrices.list[[i]], main = pathway_names[i], Rowv = F)
     #heatmap.2(genes_count_matrices.list[[i]], main = pathway_names[i], Rowv = F)
-    pheatmap(genes_count_matrices.list[[i]], main = pathway_names[i], cluster_cols = F)
+    pheatmap(genes_count_matrices_list[[i]], main = pathway_names[i],
+             cluster_rows = cluster_rows,
+             cluster_cols = cluster_cols,
+             show_colnames = show_colnames,
+             show_rownames = show_rownames,
+             annotation_col = annotation_col,
+             border_color = border_color,
+             color = color
+             )
   }
 
-  # plot heatmap of all genes that are not in any of those pathways
-  if(left_all == T){
-
-  }
-
-  dev.off()
-
-
+  graphics.off()
 
 }

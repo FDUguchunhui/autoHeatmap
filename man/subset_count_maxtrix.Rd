@@ -10,7 +10,7 @@ subset_count_maxtrix(count_matrix, enrichment)
 \item{count_matrix}{the RNA-seq expression level count matrix, typically a
 normalized count matrix is used}
 
-\item{enrichment_xlsx}{the modified enrichment export xlsx file}
+\item{enrichment}{the modified enrichment export csv file from xlsx file}
 
 \item{fun}{the fun used to get lists of genes names from enrichment analysis
 export}

@@ -4,15 +4,28 @@
 \alias{hmplot}
 \title{plot heatmap by integrate data from DESeq and enrichment analysis}
 \usage{
-hmplot(count_matrix, enrichment, file = "heatmap.pdf", left_all = T)
+hmplot(
+  count_matrix,
+  enrichment,
+  file = "heatmap.pdf",
+  cluster_rows = TRUE,
+  cluster_cols = TRUE,
+  show_colnames = TRUE,
+  show_rownames = TRUE,
+  annotation_col = NA,
+  border_color = "black",
+  color = inferno(10)
+)
 }
 \arguments{
 \item{count_matrix}{the RNA-seq expression level count matrix}
 
-\item{file}{the destination and name you want to save your heatmap, by default is the
-your current work directory, the default name is heatmap.pdf}
+\item{file}{the destination and name you want to save your heatmap, by default is the}
 
 \item{enrichment_xlsx}{the post-processed Excel file from enrichment analysis}
+
+\item{...}{other parameters used in pheatmap
+your current work directory, the default name is heatmap.pdf}
 }
 \value{
 output a pdf file of heatmaps of all the pathways in the enrichment_xlsx
