@@ -1,5 +1,5 @@
 .libPaths("D:/R-3.5.1/library")
-#' @import pheatmap gplots
+#' @import pheatmap gplots tibble tidyr readr dplyr
 # options
 options(tibble.print_max = 10, tibble.width = Inf)
 
@@ -12,14 +12,14 @@ options(tibble.print_max = 10, tibble.width = Inf)
 get_pathway_namelist <- function(fileName){
 
   #read the enrichment dataset as tibble
-  enrichment.csv <- file(fileName)
-  string.list <- scan(enrichment.csv, what = '', sep = '\n')
-  start <- which(startsWith(string.list, 'Gene/Gene Set Overlap'))
-  enrichment.tibble <- readr::read_csv(file = fileName, skip = start + 1,
+  enrichment_csv <- file(fileName)
+  string_list <- scan(enrichment_csv, what = '', sep = '\n')
+  start <- which(startsWith(string_list, 'Gene/Gene Set Overlap'))
+  enrichment_tibble <- readr::read_csv(file = fileName, skip = start + 1,
                                        col_types = cols(
                                          `Entrez Gene Id` = col_character())
   )
-  close(enrichment.csv)
+  close(enrichment_csv)
   # the enrichment.table have data structure like this
   # Entrez.Gene.Id Gene.Symbol Gene.Description                               HALLMARK_E2F_TARGETS
   # <dbl> <fct>       <fct>                                          <fct>
@@ -36,13 +36,13 @@ get_pathway_namelist <- function(fileName){
 
   # create a number of list corresponding to the number pathway in the enrichment analysis
   # First, get a vector of those pathway names
-  pathway_names.vector <- colnames(enrichment.tibble)[-c(1:3)]
+  pathway_names_vector <- colnames(enrichment_tibble)[-c(1:3)]
   # a list of tibble contain two column, column 1 is gene name
   #
-  pathway_genes.list <- list()
-  for(i in 1:length(pathway_names.vector)){
-    pathway_genes.list[[i]] <- dplyr::select(enrichment.tibble, `Gene Symbol`,
-                                             pathway_names.vector[i]) %>%
+  pathway_genes_list <- list()
+  for(i in 1:length(pathway_names_vector)){
+    pathway_genes_list[[i]] <- dplyr::select(enrichment_tibble, `Gene Symbol`,
+                                             pathway_names_vector[i]) %>%
       dplyr::filter(.[[2]] != 'NA') %>%
       dplyr::select(`Gene Symbol`) %>%
       dplyr::pull(var = 1)
@@ -50,17 +50,17 @@ get_pathway_namelist <- function(fileName){
 
 
   # assign the pathway name to each subset on the list
-  names(pathway_genes.list) <- pathway_names.vector
+  names(pathway_genes_list) <- pathway_names_vector
 
   # add one additional gene names vector, which are those genes are not in any
   #of those pathway
-  genes.union <- purrr::reduce(pathway_genes.list, union)
-  gene.left <- dplyr::filter(enrichment.tibble, !(`Gene Symbol` %in% genes.union)) %>%
-    dplyr::select(`Gene Symbol`)
+  genes_union <- purrr::reduce(pathway_genes_list, union)
+  gene_left <- filter(enrichment_tibble, !(`Gene Symbol` %in% genes_union)) %>%
+    select(`Gene Symbol`)
   # add it into the list
-  pathway_genes.list <- c(pathway_genes.list, left = gene.left)
+  pathway_genes_list <- c(pathway_genes_list, left = gene_left)
 
-  return(pathway_genes.list)
+  return(pathway_genes_list)
 }
 
 
@@ -69,7 +69,7 @@ get_pathway_namelist <- function(fileName){
 #' more information
 #' @param count_matrix  the RNA-seq expression level count matrix, typically a
 #'   normalized count matrix is used
-#' @param enrichment_xlsx  the modified enrichment export xlsx file
+#' @param enrichment  the modified enrichment export csv file from xlsx file
 #' @param fun the fun used to get lists of genes names from enrichment analysis
 #'   export
 #' @return a list of tibbles of count matrix for different pathways
@@ -78,7 +78,7 @@ get_pathway_namelist <- function(fileName){
 #'
 subset_count_maxtrix <- function(count_matrix, enrichment){
   # convert count matrix as tibble
-  count_matrix.tibble <- as_tibble((data.frame(gene_name = row.names(count_matrix),
+  count_matrix_tibble <- as_tibble((data.frame(gene_name = row.names(count_matrix),
                                                count_matrix)))
   pathway_genes_names.list <- get_pathway_namelist(enrichment)
   # get a list of lists of gene names only
