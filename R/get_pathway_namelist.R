@@ -111,15 +111,10 @@ subset_count_maxtrix <- function(count_matrix, enrichment){
 #' @export
 #'
 #'
-hmplot <- function(count_matrix, enrichment,
+hmplot <- function(count_matrix,
+                   enrichment,
                    file = 'heatmap.pdf',
-                   cluster_rows = TRUE,
-                   cluster_cols = TRUE,
-                   show_colnames = TRUE,
-                   show_rownames = TRUE,
-                   annotation_col = NA,
-                   border_color = 'black',
-                   color = inferno(10)){
+                   ...){
   # get the a list of tibbles of subsets of genes
   genes_tibbles_list <- subset_count_maxtrix(count_matrix, enrichment)$subgroups
   # get the names of objects in list, will be used as title of heatmaps
@@ -139,13 +134,7 @@ hmplot <- function(count_matrix, enrichment,
     #heatmap.2(genes_count_matrices.list[[i]], main = pathway_names[i], Rowv = F)
     pheatmap(mat = genes_count_matrices_list[[i]],
              main = pathway_names[i],
-             cluster_rows = cluster_rows,
-             cluster_cols = cluster_cols,
-             show_colnames = show_colnames,
-             show_rownames = show_rownames,
-             annotation_col = annotation_col,
-             border_color = border_color,
-             color = color
+             ...
              )
   }
 
