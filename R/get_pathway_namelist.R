@@ -78,8 +78,10 @@ get_pathway_namelist <- function(fileName){
 #'
 subset_count_maxtrix <- function(count_matrix, enrichment){
   # convert count matrix as tibble
-  count_matrix_tibble <- as_tibble((data.frame(gene_name = rownames(count_matrix),
-                                               count_matrix)))
+  # careful when you use data.frame rather than as.data.frame, the colnames is different from matrix
+  count_matrix_tibble <- tibble::as_tibble(data.frame(rownames(count_matrix),
+                                               count_matrix))
+  colnames(count_matrix_tibble) <- c('gene_name', colnames(count_matrix))
   pathway_genes_names_list <- get_pathway_namelist(enrichment)
   pathway_names <- names(pathway_genes_names_list)
   # get a list of lists of gene names only
@@ -100,7 +102,7 @@ subset_count_maxtrix <- function(count_matrix, enrichment){
 #' plot heatmap by integrate data from DESeq and enrichment analysis
 #'
 #' more information
-#' @param count_matrix the RNA-seq expression level count matrix
+#' @param count_matrix the RNA-seq expression level count matrix or intensity matrix from microarray
 #' @param enrichment_xlsx the post-processed Excel file from enrichment analysis
 #' @param file the destination and name you want to save your heatmap, by default is the
 #' @param ... other parameters used in pheatmap
@@ -109,7 +111,8 @@ subset_count_maxtrix <- function(count_matrix, enrichment){
 #' @export
 #'
 #'
-hmplot <- function(count_matrix, enrichment, file = 'heatmap.pdf',
+hmplot <- function(count_matrix, enrichment,
+                   file = 'heatmap.pdf',
                    cluster_rows = TRUE,
                    cluster_cols = TRUE,
                    show_colnames = TRUE,
@@ -134,7 +137,8 @@ hmplot <- function(count_matrix, enrichment, file = 'heatmap.pdf',
   for(i in 1:(length(genes_tibbles_list))){
     #heatmap(genes_count_matrices.list[[i]], main = pathway_names[i], Rowv = F)
     #heatmap.2(genes_count_matrices.list[[i]], main = pathway_names[i], Rowv = F)
-    pheatmap(genes_count_matrices_list[[i]], main = pathway_names[i],
+    pheatmap(mat = genes_count_matrices_list[[i]],
+             main = pathway_names[i],
              cluster_rows = cluster_rows,
              cluster_cols = cluster_cols,
              show_colnames = show_colnames,

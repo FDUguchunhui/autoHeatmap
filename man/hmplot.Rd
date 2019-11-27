@@ -18,7 +18,7 @@ hmplot(
 )
 }
 \arguments{
-\item{count_matrix}{the RNA-seq expression level count matrix}
+\item{count_matrix}{the RNA-seq expression level count matrix or intensity matrix from microarray}
 
 \item{file}{the destination and name you want to save your heatmap, by default is the}
 
