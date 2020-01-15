@@ -137,7 +137,8 @@ hmplot <- function(count_matrix,
              ...
              )
   }
-
+  ####################################
+  # need to debug: some time cannot write pdf file
   graphics.off()
 
 }
