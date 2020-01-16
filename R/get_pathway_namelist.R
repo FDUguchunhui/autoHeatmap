@@ -127,6 +127,10 @@ hmplot <- function(count_matrix,
   for(i in 1:length(genes_tibbles_list)){
     rownames(genes_count_matrices_list[[i]]) <- pull(select(genes_tibbles_list[[i]], 1))
   }
+
+  #####################################################################
+
+
   pdf(file)
   # plot the heatmap for subsets
   for(i in 1:(length(genes_tibbles_list))){
